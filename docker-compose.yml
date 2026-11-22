@@ -1,0 +1,8 @@
+services:
+  arena-server:
+    build: .
+    image: arena-server:latest
+    container_name: arena-server
+    ports:
+      - "7777:7777/udp"
+    restart: unless-stopped
