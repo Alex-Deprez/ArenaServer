@@ -26,17 +26,17 @@ Le client et le serveur sont le même projet. Le mode serveur s'active avec `--s
 
 Commandes : ZQSD (position WASD), souris, espace pour sauter, Échap pour libérer la souris.
 
-## Déployer sur le NAS
+## Déploiement
 
-1. Dans Godot, va dans *Projet > Exporter…* et ajoute un preset **Linux** nommé `Serveur Linux` :
-   - onglet *Ressources*, *Mode d'export* : **Exporter en tant que serveur dédié** ;
-   - architecture : `x86_64` ou `arm64` selon le CPU du NAS ;
-   - chemin : `build/server/arena_server.x86_64` (ou `.arm64`), avec *Intégrer le PCK* coché.
-2. Copie `build/server/`, `Dockerfile` et `docker-compose.yml` sur le NAS.
-3. Dans Container Manager, crée un *Projet* à partir de ce dossier (ou lance `docker compose up -d --build` en SSH).
-   Sur un NAS ARM, ajoute `args: { SERVER_BIN: arena_server.arm64 }` dans la section `build` du compose.
-4. Redirige le port **7777/UDP** de la box vers le NAS et autorise-le dans le pare-feu de DSM.
-5. Les joueurs se connectent à `tonnom.synology.me:7777`.
+À chaque push sur `main`, GitHub Actions (`.github/workflows/server-image.yml`) :
+
+1. exporte le serveur dédié avec les presets de `export_presets.cfg` (amd64 et arm64) ;
+2. construit l'image Docker multi-architecture ;
+3. la publie sur `ghcr.io/alex-deprez/arena-server` (tags `latest` et le SHA du commit).
+
+La variable `GODOT_VERSION` du workflow doit correspondre à la version de l'éditeur.
+
+L'installation sur le NAS (compose, ports, DDNS, mises à jour) est décrite dans le dépôt [ArenaInfra](https://github.com/Alex-Deprez/ArenaInfra).
 
 ## Feuille de route
 

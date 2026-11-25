@@ -1,15 +1,14 @@
-# Image du serveur dédié. Attend l'export Godot dans build/server/
-# x86 : SERVER_BIN=arena_server.x86_64 (défaut) / ARM : SERVER_BIN=arena_server.arm64
+# Image du serveur dédié, multi-architecture (amd64 / arm64).
+# Attend les exports Godot dans build/server/arena_server.<arch> (voir export_presets.cfg).
 FROM debian:bookworm-slim
 
-ARG SERVER_BIN=arena_server.x86_64
-ENV SERVER_BIN=${SERVER_BIN}
+ARG TARGETARCH
 
 RUN useradd --create-home arena
 WORKDIR /app
-COPY build/server/ ./
-RUN chmod +x "./${SERVER_BIN}"
+COPY build/server/arena_server.${TARGETARCH} ./arena_server
+RUN chmod +x ./arena_server
 
 USER arena
 EXPOSE 7777/udp
-ENTRYPOINT ["sh", "-c", "exec ./${SERVER_BIN} --headless -- --server \"$@\"", "--"]
+ENTRYPOINT ["./arena_server", "--headless", "--", "--server"]
